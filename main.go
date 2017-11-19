@@ -6,7 +6,9 @@ import (
 
 func main() {
 
-	body, err := download("http://example.qutheory.io/json")
+	url := "http://example.qutheory.io/json"
+
+	body, err := download(url)
 	if err != nil {
 		fmt.Println(err)
 	}
