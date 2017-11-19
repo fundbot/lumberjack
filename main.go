@@ -4,12 +4,34 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"time"
 )
 
+type conf struct {
+	fundBaseURL string
+}
+
+// Read environment variables
+func (c *conf) readEnvVariables() {
+
+	c.fundBaseURL = os.Getenv("FUND_BASE_URL")
+	if c.fundBaseURL == "" {
+		fmt.Println("Please set FUND_BASE_URL environment variable")
+		os.Exit(1)
+	}
+	fmt.Println(c)
+
+}
+
 func main() {
+
+	var configuration conf
+	configuration.readEnvVariables()
+
 	go getFiles()
 
+	fmt.Println("Listening at port 8080")
 	http.HandleFunc("/", handler)
 	http.ListenAndServe(":8080", nil)
 }
