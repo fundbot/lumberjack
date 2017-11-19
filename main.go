@@ -8,45 +8,64 @@ import (
 	"time"
 )
 
+//
+// Conf : read and handle configuration
+//
 type conf struct {
 	fundBaseURL string
 }
 
 // Read environment variables
 func (c *conf) readEnvVariables() {
-
-	c.fundBaseURL = os.Getenv("FUND_BASE_URL")
-	if c.fundBaseURL == "" {
-		fmt.Println("Please set FUND_BASE_URL environment variable")
-		os.Exit(1)
-	}
+	c.fundBaseURL = c.readEvnVar("FUND_BASE_URL")
 	fmt.Println(c)
-
 }
 
-func main() {
+func (c *conf) readEvnVar(key string) string {
+	value := os.Getenv(key)
+	if value == "" {
+		fmt.Printf("Please set %s environment variable\n", key)
+		os.Exit(1)
+	}
+	return value
+}
 
-	var configuration conf
-	configuration.readEnvVariables()
+//
+// Server : Load up a tiny Server
+//
+type server struct{}
 
-	go getFiles()
-
+// Start a server to respond to pings
+func (s *server) startServer() {
 	fmt.Println("Listening at port 8080")
-	http.HandleFunc("/", handler)
+	http.HandleFunc("/", s.handler)
 	http.ListenAndServe(":8080", nil)
 }
 
 // Reply to ping
-func handler(w http.ResponseWriter, r *http.Request) {
+func (s *server) handler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Pong %s!", r.URL.Path[1:])
 }
 
+//
+// Main: read config and start downloading files
+//
+func main() {
+	var c conf
+	c.readEnvVariables()
+
+	go getFiles(c.fundBaseURL)
+
+	var s server
+	s.startServer()
+}
+
 // Call a function every x seconds
-func getFiles() {
+func getFiles(url string) {
 	for {
 		<-time.After(1 * time.Second)
 
-		url := "http://example.qutheory.io/json"
+		// url := "http://example.qutheory.io/json"
 
 		body, err := download(url)
 		if err != nil {
@@ -60,10 +79,10 @@ func getFiles() {
 // Download a file
 func download(url string) (string, error) {
 	resp, err := http.Get(url)
-	defer resp.Body.Close()
 	if err != nil {
 		return "", err
 	}
+	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
