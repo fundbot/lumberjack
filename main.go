@@ -65,9 +65,13 @@ func getFiles(url string) {
 	for {
 		<-time.After(1 * time.Second)
 
-		// url := "http://example.qutheory.io/json"
+		start := time.Date(2006, time.April, 3, 0, 0, 0, 0, time.UTC)
+		startTime := start.Format("02-Jan-2006")
 
-		body, err := download(url)
+		formattedURL := fmt.Sprintf(url, startTime)
+		fmt.Println(formattedURL)
+
+		body, err := download(formattedURL)
 		if err != nil {
 			fmt.Println(err)
 		}
