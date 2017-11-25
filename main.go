@@ -4,28 +4,12 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/fundbot/lumberjack/config"
+	"github.com/fundbot/lumberjack/server"
 )
-
-//
-// Server : Load up a tiny Server
-//
-type server struct{}
-
-// Start a server to respond to pings
-func (s *server) startServer() {
-	connectString := fmt.Sprintf(":%d", config.Port())
-	fmt.Printf("Application %s Listening at port %d\n", config.Name(), config.Port())
-	http.HandleFunc("/", s.handler)
-	http.ListenAndServe(connectString, nil)
-}
-
-// Reply to ping
-func (s *server) handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Pong %s!", r.URL.Path[1:])
-}
 
 //
 // Main: read config and start downloading files
@@ -34,13 +18,12 @@ func main() {
 	config.Load()
 	// go getFiles(c.fundBaseURL)
 
-	// startDispatcher(3)
-	// for i := 0; i < 10; i++ {
-	// 	addToDownloadQueue("Job"+strconv.Itoa(i), time.Duration(i)*time.Second)
-	// }
+	startDispatcher(3)
+	for i := 0; i < 10; i++ {
+		addToDownloadQueue("Job"+strconv.Itoa(i), time.Duration(i)*time.Second)
+	}
 
-	var s server
-	s.startServer()
+	server.StartServer()
 }
 
 // Call a function every x seconds
