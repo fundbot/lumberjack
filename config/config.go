@@ -19,10 +19,7 @@ var config *Config
 
 // Load config from file
 func Load() {
-	viper.SetDefault("APP_PORT", "3000")
-	viper.SetDefault("LOG_LEVEL", "debug")
 	viper.AutomaticEnv()
-
 	viper.SetConfigName("application")
 	viper.AddConfigPath(".")
 	viper.SetConfigType("toml")
