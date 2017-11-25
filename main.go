@@ -10,6 +10,7 @@ import (
 // Main: read config and start downloading files
 //
 func main() {
+	config.SetVersion("0.1.0")
 	config.Load()
 	sync.StartProcessing()
 	server.StartServer()
