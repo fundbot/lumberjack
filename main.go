@@ -2,12 +2,11 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
-	"net/http"
 	"strconv"
 	"time"
 
 	"github.com/fundbot/lumberjack/config"
+	"github.com/fundbot/lumberjack/download"
 	"github.com/fundbot/lumberjack/server"
 )
 
@@ -37,29 +36,13 @@ func getFiles(url string) {
 		formattedURL := fmt.Sprintf(url, startTime)
 		fmt.Println(formattedURL)
 
-		body, err := downloadFile(formattedURL)
+		body, err := download.File(formattedURL)
 		if err != nil {
 			fmt.Println(err)
 		}
 
 		fmt.Println(body)
 	}
-}
-
-// Download a file
-func downloadFile(url string) (string, error) {
-	resp, err := http.Get(url)
-	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return "", err
-	}
-
-	return string(body), nil
 }
 
 //
@@ -139,14 +122,14 @@ func (worker *worker) Start() {
 			worker.dWorkerQueue <- worker.dWorkerDownload
 
 			select {
-			case download := <-worker.dWorkerDownload:
+			case downloadJob := <-worker.dWorkerDownload:
 				// Receive a work request
-				fmt.Printf("worker %d: received work request, delaying for %f seconds\n", worker.id, download.Delay.Seconds())
+				fmt.Printf("worker %d: received work request, delaying for %f seconds\n", worker.id, downloadJob.Delay.Seconds())
 				// time.Sleep(download.Delay)
-				body, _ := downloadFile("http://example.qutheory.io/json")
+				body, _ := download.File("http://example.qutheory.io/json")
 				fmt.Println(body)
 				worker.taskCompleted++
-				fmt.Printf("worker %d: Hello, %s! Work is completed (%d)\n", worker.id, download.Name, worker.taskCompleted)
+				fmt.Printf("worker %d: Hello, %s! Work is completed (%d)\n", worker.id, downloadJob.Name, worker.taskCompleted)
 			case <-worker.quit:
 				// Asked to stop working
 				fmt.Printf("worker %d stopping\n", worker.id)
