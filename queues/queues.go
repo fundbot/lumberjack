@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/fundbot/lumberjack/config"
 	"github.com/fundbot/lumberjack/download"
 )
 
@@ -15,7 +16,7 @@ var workerQueue chan chan downloadRequest
 
 // Work Request
 type downloadRequest struct {
-	Name  string
+	Date  string
 	Delay time.Duration
 }
 
@@ -25,13 +26,12 @@ type worker struct {
 	dWorkerDownload chan downloadRequest
 	dWorkerQueue    chan chan downloadRequest
 	quit            chan bool
-	taskCompleted   int
 }
 
 // AddToDownloadQueue : Add work to the downloadQueue
-func AddToDownloadQueue(name string, delay time.Duration) {
-	download := downloadRequest{Name: name, Delay: delay}
-	fmt.Printf("Adding download %s to queue\n", name)
+func AddToDownloadQueue(date string, delay time.Duration) {
+	download := downloadRequest{Date: date, Delay: delay}
+	fmt.Printf("Adding download %s to queue\n", date)
 	downloadQueue <- download
 }
 
@@ -84,11 +84,12 @@ func (worker *worker) Start() {
 			case downloadJob := <-worker.dWorkerDownload:
 				// Receive a work request
 				fmt.Printf("worker %d: received work request, delaying for %f seconds\n", worker.id, downloadJob.Delay.Seconds())
-				// time.Sleep(download.Delay)
-				body, _ := download.File("http://example.qutheory.io/json")
+				finalURL := fmt.Sprintf(config.BaseURL(), downloadJob.Date, downloadJob.Date)
+				fmt.Println(finalURL)
+				body, _ := download.File(finalURL)
 				fmt.Println(body)
-				worker.taskCompleted++
-				fmt.Printf("worker %d: Hello, %s! Work is completed (%d)\n", worker.id, downloadJob.Name, worker.taskCompleted)
+				fmt.Printf("worker %d: %s has been downloaded\n", worker.id, downloadJob.Date)
+				time.Sleep(downloadJob.Delay)
 			case <-worker.quit:
 				// Asked to stop working
 				fmt.Printf("worker %d stopping\n", worker.id)
