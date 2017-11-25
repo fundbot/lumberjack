@@ -16,9 +16,10 @@ type server struct{}
 
 // Start a server to respond to pings
 func (s *server) startServer() {
-	fmt.Println("Listening at port 8080")
+	connectString := fmt.Sprintf(":%d", config.Port())
+	fmt.Printf("Application %s Listening at port %d\n", config.Name(), config.Port())
 	http.HandleFunc("/", s.handler)
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(connectString, nil)
 }
 
 // Reply to ping

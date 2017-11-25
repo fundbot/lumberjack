@@ -47,6 +47,11 @@ func readLatestConfig() {
 	fmt.Println(config)
 }
 
+// Name : Exporting Name
+func Name() string {
+	return config.name
+}
+
 // Application : Exporting configuration
 func Application() *Config {
 	return config
