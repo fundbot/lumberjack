@@ -9,6 +9,7 @@ import (
 
 // Config object
 type Config struct {
+	version  string
 	name     string
 	port     int
 	logLevel string
@@ -47,14 +48,18 @@ func readLatestConfig() {
 	fmt.Println(config)
 }
 
-// Name : Exporting Name
-func Name() string {
-	return config.name
-}
-
 // Application : Exporting configuration
 func Application() *Config {
 	return config
+}
+
+func SetVersion(version string) {
+	config.version = version
+}
+
+// Name : Exporting Name
+func Name() string {
+	return config.name
 }
 
 // Port : Exporting port
@@ -70,4 +75,9 @@ func LogLevel() string {
 // BaseURL : Exporting baseURL
 func BaseURL() string {
 	return config.baseURL
+}
+
+// Version : Exporting version
+func Version() string {
+	return config.version
 }
