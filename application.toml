@@ -1,0 +1,7 @@
+[application]
+name = "Lumberjack7"
+port = 3000
+logLevel = "development"
+
+[reading]
+baseURL = "http://example.qutheory.io/json"

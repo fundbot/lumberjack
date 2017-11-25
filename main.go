@@ -4,32 +4,10 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"os"
-	"strconv"
 	"time"
+
+	"github.com/fundbot/lumberjack/config"
 )
-
-//
-// Conf : read and handle configuration
-//
-type conf struct {
-	fundBaseURL string
-}
-
-// Read environment variables
-func (c *conf) readEnvVariables() {
-	c.fundBaseURL = c.readEvnVar("FUND_BASE_URL")
-	fmt.Println(c)
-}
-
-func (c *conf) readEvnVar(key string) string {
-	value := os.Getenv(key)
-	if value == "" {
-		fmt.Printf("Please set %s environment variable\n", key)
-		os.Exit(1)
-	}
-	return value
-}
 
 //
 // Server : Load up a tiny Server
@@ -52,15 +30,13 @@ func (s *server) handler(w http.ResponseWriter, r *http.Request) {
 // Main: read config and start downloading files
 //
 func main() {
-	var c conf
-	c.readEnvVariables()
-
+	config.Load()
 	// go getFiles(c.fundBaseURL)
 
-	startDispatcher(3)
-	for i := 0; i < 10; i++ {
-		addToDownloadQueue("Job"+strconv.Itoa(i), time.Duration(i)*time.Second)
-	}
+	// startDispatcher(3)
+	// for i := 0; i < 10; i++ {
+	// 	addToDownloadQueue("Job"+strconv.Itoa(i), time.Duration(i)*time.Second)
+	// }
 
 	var s server
 	s.startServer()
