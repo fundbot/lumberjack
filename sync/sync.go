@@ -16,8 +16,8 @@ func StartProcessing() {
 func loadJobs() {
 	// Load Download Jobs
 	// Start from 01-Apr-2006, [1143849600], and add a job for everyday till today
-	// end := time.Now().Unix()
-	end := int64(1144627200)
+	end := time.Now().Unix()
+	// end := int64(1144627200)
 	start := int64(1143849600)
 	day := int64(60 * 60 * 24)
 	loop := start
