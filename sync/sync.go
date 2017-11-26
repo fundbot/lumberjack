@@ -31,5 +31,5 @@ func loadJobs() {
 }
 
 func loadWorkers() {
-	queues.StartDispatcher(1)
+	queues.StartDispatcher(100)
 }

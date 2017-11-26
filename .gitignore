@@ -17,4 +17,6 @@
 application.toml
 
 # Build
+build/*
 build/data
+log
