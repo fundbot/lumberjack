@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/fundbot/lumberjack/config"
-	"github.com/fundbot/lumberjack/download"
+	"github.com/sudhanshuraheja/lumberjack/config"
+	"github.com/sudhanshuraheja/lumberjack/download"
 )
 
 // Queue of all downloads that we need to do

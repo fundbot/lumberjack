@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/fundbot/lumberjack/config"
+	"github.com/sudhanshuraheja/lumberjack/config"
 )
 
 // StartServer : to respond to pings, only running this because we might need it in the future

@@ -3,8 +3,8 @@ package sync
 import (
 	"time"
 
-	"github.com/fundbot/lumberjack/config"
-	"github.com/fundbot/lumberjack/queues"
+	"github.com/sudhanshuraheja/lumberjack/config"
+	"github.com/sudhanshuraheja/lumberjack/queues"
 )
 
 // StartProcessing : setup jobs and runners
