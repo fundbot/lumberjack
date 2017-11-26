@@ -85,8 +85,7 @@ func (worker *worker) Start() {
 				// Receive a work request
 				fmt.Printf("worker %d: received work request, delaying for %f seconds\n", worker.id, downloadJob.Delay.Seconds())
 				finalURL := fmt.Sprintf(config.BaseURL(), downloadJob.Date, downloadJob.Date)
-				fmt.Println(finalURL)
-				body, _ := download.File(finalURL)
+				body, _ := download.File(finalURL, downloadJob.Date)
 				fmt.Println(body)
 				fmt.Printf("worker %d: %s has been downloaded\n", worker.id, downloadJob.Date)
 				time.Sleep(downloadJob.Delay)
