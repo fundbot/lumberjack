@@ -39,6 +39,7 @@ func Load() {
 
 func readLatestConfig() {
 	config = &Config{
+		version:  "0.1.0",
 		name:     viper.GetString("application.name"),
 		port:     viper.GetInt("application.port"),
 		logLevel: viper.GetString("application.logLevel"),
@@ -51,10 +52,6 @@ func readLatestConfig() {
 // Application : Exporting configuration
 func Application() *Config {
 	return config
-}
-
-func SetVersion(version string) {
-	config.version = version
 }
 
 // Name : Exporting Name
