@@ -14,6 +14,7 @@ type Config struct {
 	port     int
 	logLevel string
 	baseURL  string
+	delay    int
 }
 
 var config *Config
@@ -44,14 +45,20 @@ func readLatestConfig() {
 		port:     viper.GetInt("application.port"),
 		logLevel: viper.GetString("application.logLevel"),
 		baseURL:  viper.GetString("reading.baseURL"),
+		delay:    viper.GetInt("reading.delay"),
 	}
 
-	fmt.Println(config)
+	// fmt.Println(config)
 }
 
 // Application : Exporting configuration
 func Application() *Config {
 	return config
+}
+
+// Version : Exporting version
+func Version() string {
+	return config.version
 }
 
 // Name : Exporting Name
@@ -74,7 +81,7 @@ func BaseURL() string {
 	return config.baseURL
 }
 
-// Version : Exporting version
-func Version() string {
-	return config.version
+// Delay : Exporting Delay
+func Delay() int {
+	return config.delay
 }
