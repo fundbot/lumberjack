@@ -17,6 +17,7 @@ var workerQueue chan chan downloadRequest
 // Work Request
 type downloadRequest struct {
 	Date  string
+	Key   string
 	Delay time.Duration
 }
 
@@ -29,9 +30,9 @@ type worker struct {
 }
 
 // AddToDownloadQueue : Add work to the downloadQueue
-func AddToDownloadQueue(date string, delay time.Duration) {
-	download := downloadRequest{Date: date, Delay: delay}
-	fmt.Printf("Adding download %s to queue\n", date)
+func AddToDownloadQueue(date string, key string, delay time.Duration) {
+	download := downloadRequest{Date: date, Key: key, Delay: delay}
+	fmt.Printf("Adding download [%s] for processing\n", download.Key)
 	downloadQueue <- download
 }
 
@@ -42,16 +43,16 @@ func StartDispatcher(numWorkers int) {
 
 	// Create workers
 	for i := 0; i < numWorkers; i++ {
-		fmt.Println("Dispathcher : Starting worker", i+1)
 		downloadWorker := newDownloadWorker(i+1, workerQueue)
 		downloadWorker.Start()
 	}
+	fmt.Printf("[Dispatcher] Started %d workers\n", numWorkers)
 
 	go func() {
 		for {
 			select {
 			case download := <-downloadQueue:
-				fmt.Printf("Dispatcher : Received work request for %f seconds\n", download.Delay.Seconds())
+				// fmt.Printf("Dispatcher : Received work request for %f seconds\n", download.Delay.Seconds())
 				go func() {
 					downloader := <-workerQueue
 					downloader <- download
@@ -77,21 +78,21 @@ func (worker *worker) Start() {
 	go func() {
 		for {
 			// Add this worker to the workerQueue
-			fmt.Printf("worker %d: adding worker back to workerQueue\n", worker.id)
+			fmt.Printf("[Worker %d] Available for work again\n", worker.id)
 			worker.dWorkerQueue <- worker.dWorkerDownload
 
 			select {
 			case downloadJob := <-worker.dWorkerDownload:
 				// Receive a work request
-				fmt.Printf("worker %d: received work request, delaying for %f seconds\n", worker.id, downloadJob.Delay.Seconds())
+				fmt.Printf("[Worker %d] Received work request, downloading %s\n", worker.id, downloadJob.Date)
 				finalURL := fmt.Sprintf(config.BaseURL(), downloadJob.Date, downloadJob.Date)
-				body, _ := download.File(finalURL, downloadJob.Date)
-				fmt.Println(body)
-				fmt.Printf("worker %d: %s has been downloaded\n", worker.id, downloadJob.Date)
+				download.File(finalURL, downloadJob.Date, downloadJob.Key)
+				// fmt.Println(body)
+				fmt.Printf("[Worker %d] %s has been downloaded, off to sleep for %s\n", worker.id, downloadJob.Date, downloadJob.Delay.String())
 				time.Sleep(downloadJob.Delay)
 			case <-worker.quit:
 				// Asked to stop working
-				fmt.Printf("worker %d stopping\n", worker.id)
+				fmt.Printf("[Worker %d] Stopping\n", worker.id)
 				return
 			}
 		}
